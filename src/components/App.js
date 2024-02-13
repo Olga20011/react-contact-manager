@@ -1,59 +1,58 @@
-import React, {useEffect, useState} from "react";
-import { v4 as uuidv4 } from "uuid";
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import axios from 'axios'; // Import Axios
+// import { v4 as uuidv4 } from "uuid";
 import "./App.css";
+// import api from '../api/contact.js';
 import Header from "./Header";
 import AddContact from "./AddContact";
 import ContactList from "./ContactList";
+import addContactHandler from "./AddContact"
+import deleteContactHandler from "./ContactList"
+import ContactDetail from "./ContactDetail";
+import EditContact from "./EditContact";
+
 
 function App() {
-  const LOCAL_STORAGE_KEY = "contacts";
-  const [contacts, setContacts]=useState([]);
+  const [contacts, setContacts] = useState([]);
 
- const addContactHandler = (contact) => {
-  console.log(contact);
-  setContacts([...contacts,{id:uuidv4(),  ...contact }]); 
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([...contacts,{id:uuidv4(),  ...contact }]));
-};
-
-const removeContactHandler = (id) =>{
-  const newContactList = contacts.filter((contact) =>{
-
-    return contact.id !==id;
-
-  });
-  setContacts(newContactList);
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newContactList));
-}
-
-
-const retrieveContactsFromLocalStorage=() => {
-  const retriveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-  if (retriveContacts) {
-    setContacts(retriveContacts);
-  }
-};
-
-useEffect(() => {
-  retrieveContactsFromLocalStorage();
-}, []);
-
-
-// useEffect(() => {
-//   if(contacts.length>0){
-//       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
-//   }
-// }, [contacts]);
-
-  
-  
   return (
-  
     <div className="ui container">
-  <Header/>
-  <AddContact addContactHandler = {addContactHandler}/>
-  <ContactList contacts={contacts} getContactId= {removeContactHandler}/>
+      <Router>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ContactList
+                contacts={contacts}
+                getContactId={deleteContactHandler}
+              />
+            }
+          />
+          <Route
+            path="/add"
+            element={<AddContact addContactHandler={addContactHandler} />}
+          />
+
+          <Route
+            path="/contact/:id"
+            element={<ContactDetail contacts={contacts} />}
+          />
+          <Route
+            path="/edit/:id"
+            element={<EditContact/>}
+          />
+           <Route
+            path="/delete/:id"
+            element={<useDeleteContactHandler/>}
+          />
+        </Routes>
+
+      </Router>
     </div>
   );
 }
 
 export default App;
+    
